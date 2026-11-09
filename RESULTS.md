@@ -8,13 +8,13 @@
 - Step 0.12, results of the three runs without a session (optional): failed, failed, failed.
 - Step 0.16, blocks of "how many of the three tools are excluded": 0 tools, 1 tool, 2 tools, 3 tools
 
-## Defect report
+# Defect report
 
-- Title:
-- Request:
-- Expected result:
-- Actual result:
-- Severity:
+- Title: Excluding all three tools makes POST /api/pizza answer 500 with an empty body
+- Request: POST https://quickpizza.grafana.com/api/pizza with header "Authorization: token abcdef0123456789" and body {"excludedTools": ["Knife", "Pizza cutter", "Scissors"]}. Reproduce with: curl -i -H "@auth.txt" -d "@all-tools.json" https://quickpizza.grafana.com/api/pizza. The same happens with the token of a newly logged-in user.
+- Expected result: status 400 with a JSON error message, because no pizza can satisfy the request
+- Actual result: status 500 with an empty body
+- Severity: Medium. A normal customer input crashes the request and the app gets no message to show, but other requests still work.
 
 ## Part A
 
