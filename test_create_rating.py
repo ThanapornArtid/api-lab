@@ -20,3 +20,54 @@ def test_stars_out_of_range(api, auth, pizza_id, stars):
     res = api.post("/api/ratings", json=new, headers=auth)
     assert res.status_code == 400
     assert res.json() == {"error": STARS_ERROR}
+
+# C2 decimal: 3.5 stars is not a whole number and is refused.
+def test_stars_as_decimal(api, auth, pizza_id):
+    new = {"pizza_id": pizza_id, "stars": 3.5}
+    res = api.post("/api/ratings", json=new, headers=auth)
+    assert res.status_code == 400
+    error = res.json()["error"]
+    assert "cannot unmarshal number 3.5" in error
+    assert "stars" in error
+
+
+# C2 text: stars as the text "3" is refused.
+def test_stars_as_text(api, auth, pizza_id):
+    new = {"pizza_id": pizza_id, "stars": "3"}
+    res = api.post("/api/ratings", json=new, headers=auth)
+    assert res.status_code == 400
+    error = res.json()["error"]
+    assert "cannot unmarshal string" in error
+    assert "stars" in error
+
+
+# C2 missing: a rating without stars is refused.
+def test_stars_missing(api, auth, pizza_id):
+    new = {"pizza_id": pizza_id}
+    res = api.post("/api/ratings", json=new, headers=auth)
+    assert res.status_code == 400
+    assert res.json() == {"error": STARS_ERROR}
+
+
+# C3 does not exist: a rating for a pizza that does not exist is refused.
+def test_pizza_does_not_exist(api, auth):
+    new = {"pizza_id": 999999999, "stars": 3}
+    res = api.post("/api/ratings", json=new, headers=auth)
+    assert res.status_code == 400
+    assert res.json() == {"error": "pizza ID 999999999 not found"}
+
+
+# C4 none: a rating without a token is refused with 401.
+def test_no_token(api, pizza_id):
+    new = {"pizza_id": pizza_id, "stars": 3}
+    res = api.post("/api/ratings", json=new)
+    assert res.status_code == 401
+    assert res.json() == AUTH_ERROR
+
+
+# C4 wrong length: a token of the wrong length is refused with 401.
+def test_token_wrong_length(api, pizza_id):
+    new = {"pizza_id": pizza_id, "stars": 3}
+    res = api.post("/api/ratings", json=new, headers={"Authorization": "token short"})
+    assert res.status_code == 401
+    assert res.json() == AUTH_ERROR
