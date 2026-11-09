@@ -6,7 +6,7 @@
 - Step 0.3, status code of the request without a token: {"tools":["Knife","Pizza cutter","Scissors"]}
 - Step 0.4, the name of your pizza: A Scary Hawaii
 - Step 0.12, results of the three runs without a session (optional): failed, failed, failed.
-- Step 0.16, blocks of "how many of the three tools are excluded":
+- Step 0.16, blocks of "how many of the three tools are excluded": 0 tools, 1 tool, 2 tools, 3 tools
 
 ## Defect report
 
